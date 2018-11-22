@@ -10,10 +10,11 @@
 
 支持群聊@账号加命令。  
 使用见下图：
-![群聊中使用]()
-![私聊中使用]()
+![群聊中使用](https://github.com/hexueyuan/chatbot/blob/master/static/qunliao.jpg)
+![私聊中使用](https://github.com/hexueyuan/chatbot/blob/master/static/siliao.jpg)
 
 ## 下载
+> git clone git@github.com:hexueyuan/chatbot.git
   
 ## 使用
 > cd chatbot  
