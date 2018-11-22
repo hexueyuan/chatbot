@@ -16,11 +16,14 @@
 ## 下载
   
 ## 使用
-> cd chatbot
-> . init.sh
-输出当前环境，当init.sh检查结果正常时
-> cd src
-> python chatbot
+> cd chatbot  
+> . init.sh  
+
+输出当前环境，当init.sh检查结果正常时  
+
+> cd src  
+> python chatbot  
+
 然后会在命令行出现二维码，使用微信扫描登录之后，chatbot开始运行
 
 ## tips
