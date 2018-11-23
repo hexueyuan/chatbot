@@ -75,7 +75,8 @@ def text_reply(msg):
 if __name__ == '__main__':
     log.init("../log/chatbot", "notice")
     uuid = itchat.get_QRuuid()
-    itchat.auto_login(hotReload=True)
+    #itchat.auto_login(hotReload=True, enableCmdQR=2) #如果命令行二维码显示不全，可以使用该行
+    itchat.auto_login(hotReload=True, enableCmdQR=True)
     me = itchat.search_friends()
     username = me["NickName"]
     #加载黑名单词
