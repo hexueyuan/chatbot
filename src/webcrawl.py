@@ -29,7 +29,7 @@ def get_image_url():
     image_url = image_base_url + str(image_item['id'])
     return image_url
 
-def get_image_url_with_content(content):
+def get_image_url_with_query(content):
     param = {"w": content}
     req = urllib2.Request(url + '?' + urllib.urlencode(param))
     req.add_header('User-Agent', user_agent)
