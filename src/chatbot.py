@@ -17,8 +17,8 @@ def trigger_chatroom(msg):
 if __name__ == '__main__':
     log.init("../log/chatbot", "NOTICE")
     uuid = itchat.get_QRuuid()
-    #itchat.auto_login(hotReload=True, enableCmdQR=2) #如果命令行二维码显示不全，可以使用该行
-    itchat.auto_login(hotReload=True, enableCmdQR=True)
+    itchat.auto_login(hotReload=True, enableCmdQR=2) #如果命令行二维码显示不全，可以使用该行
+    #itchat.auto_login(hotReload=True, enableCmdQR=True)
     strategy.init()
 
     itchat.run()

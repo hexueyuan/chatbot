@@ -43,5 +43,4 @@ def get_image_url_with_query(content):
     return image_url
 
 if __name__ == '__main__':
-    data = opener.open(req).read()
-    print json.dumps(json.loads(data), indent=2, ensure_ascii=False)
+    print "ok"

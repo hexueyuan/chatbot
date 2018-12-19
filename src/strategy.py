@@ -2,6 +2,10 @@
 
 import re
 import itchat
+import time
+import random
+
+import hat
 import webcrawl
 import download
 import simple_log as log
@@ -112,11 +116,33 @@ def add_blackword(msg, isGroupChat=False):
     if query != "":
         blackword_list.append(query)
 
+def christmas_hat(msg, isGroupChat=False):
+    hat_img_path_list = [
+        #"../static/hat/hat0.png",
+        #"../static/hat/hat1.png",
+        "../static/hat/hat2.png"
+    ]
+    username = msg.get("FromUserName", "")
+    if username == "":
+        msg.user.send(u"机器人小源提示: 无法获取您的用户信息!")
+    head_img = itchat.get_head_img(username)
+    if head_img is None:
+        msg.user.send(u"机器人小源提示: 获取您的头像图片失败!")
+    head_img_path = "../image/" + str(int(time.time())) + ".jpg"
+    with open(head_img_path, "wb") as f:
+        f.write(head_img)
+    hat_img_path = random.choice(hat_img_path_list)
+    head_with_hat_img_path = hat.add_hat(head_img_path, hat_img_path)
+    if head_with_hat_img_path is None:
+        msg.user.send(u"机器人小源提示: 您的头像中未能识别出人脸，可能是小源还不支持识别动漫人脸哦~")
+    else:
+        msg.user.send_image(head_with_hat_img_path)
+
 #所有用户私聊和群消息均可触发
 #其它用户群消息必须@本用户触发
 strategy_map_global = {
-    #"表情包$": send_emoji_chat,
-    #"表情包：.*$": send_emoji_chat_with_query
+    "表情包$": send_emoji_chat,
+    "表情包：.*$": send_emoji_chat_with_query
 }
 
 #所有用户群消息
@@ -124,7 +150,9 @@ strategy_map_global = {
 strategy_map_chatroom = {}
 
 #私聊
-strategy_map_chatone = {}
+strategy_map_chatone = {
+    "我要圣诞帽$": christmas_hat
+}
 
 #本用户消息触发
 strategy_map_me = {
