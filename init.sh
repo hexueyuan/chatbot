@@ -44,6 +44,24 @@ else
     echo -e "Module $LIB1 status:" "\033[31mNot found\033[0m"
 fi
 
+#dlib
+LIB2="dlib"
+RESULT2=$(python -c "import $LIB2" 2>&1)
+if [[ $RESULT2 == "" ]];then
+    echo -e "Module $LIB2 status:" "\033[32mOK\033[0m"
+else
+    echo -e "Module $LIB2 status:" "\033[31mNot found\033[0m"
+fi
+
+#cv2
+LIB3="cv2"
+RESULT3=$(python -c "import $LIB3" 2>&1)
+if [[ $RESULT3 == "" ]];then
+    echo -e "Module $LIB3 status:" "\033[32mOK\033[0m"
+else
+    echo -e "Module $LIB3 status:" "\033[31mNot found\033[0m"
+fi
+
 #创建image
 if !(test -d "$ROOT/image");then
     mkdir -p "$ROOT/image"
