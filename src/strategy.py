@@ -8,7 +8,7 @@ import random
 import hat
 import webcrawl
 import download
-import simple_log as log
+import logger as log
 
 username = ""
 blackword_list = []
@@ -38,25 +38,29 @@ def strategy_switcher(msg, isGroupChat=False):
         text = msg.text.split(u"\u2005", 2)[-1].encode("utf-8")
     else:
         text = msg.text.encode("utf-8")
+    flag = True
     #个人注册函数触发检测
     user = itchat.search_friends(userName=msg["FromUserName"])
     if user is not None and user["NickName"].encode("utf-8") == username:
         for key, func in strategy_map_me.items():
             key_com = re.compile(key)
-            if key_com.match(text):
+            if key_com.match(text) and flag:
                 func(msg, isGroupChat)
+                flag = False
     #群消息注册函数触发检测
     if isGroupChat and msg.isAt:
         for key, func in strategy_map_chatroom.items():
             key_com = re.compile(key)
-            if key_com.match(text):
+            if key_com.match(text) and flag:
                 func(msg, isGroupChat)
+                flag = False
     #私聊消息注册函数触发检测
     else:
         for key, func in strategy_map_chatone.items():
             key_com = re.compile(key)
-            if key_com.match(text):
+            if key_com.match(text) and flag:
                 func(msg, isGroupChat)
+                flag = False
 
 #日志记录
 def _chat_log(msg, isGroupChat=False):
@@ -76,7 +80,8 @@ def _chat_log(msg, isGroupChat=False):
         toUserName = "Stranger"
     else:
         toUserName = toUser["NickName"].encode("utf8")
-    log.notice("{} -> {} : {}".format(fromUserName, toUserName, msg["Content"].encode("utf8")))
+    msg = "{} -> {} : {}".format(fromUserName, toUserName, msg["Content"].encode("utf8"))
+    log.info(msg.decode("utf8"))
 
 #===========注册函数===========#
 

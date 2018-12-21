@@ -1,5 +1,4 @@
 # -*- coding:utf8 -*-
-#!/user/bin/env python
 
 import urllib
 import urllib2
