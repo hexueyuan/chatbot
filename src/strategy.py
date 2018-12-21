@@ -105,10 +105,10 @@ def send_emoji_chat_with_query(msg, isGroupChat=False):
         image_url = webcrawl.get_image_url_with_query(query)
     _chat_log(msg, isGroupChat)
     if image_url is None:
-        log.debug("未找到匹配图片")
+        log.debug("未找到匹配图片".decode("utf8"))
         image_path = no_image_result_path
     elif image_url == "trigger_blackword":
-        log.notice("触发黑名单词：" + query)
+        log.info(("触发黑名单词：" + query).decode("utf8"))
         image_path = warning_image_path
     else:
         image_path = download.download_image(image_url)
@@ -122,16 +122,17 @@ def add_blackword(msg, isGroupChat=False):
         blackword_list.append(query)
 
 def christmas_hat(msg, isGroupChat=False):
+    _chat_log(msg, isGroupChat)
     hat_img_path_list = [
-        #"../static/hat/hat0.png",
-        #"../static/hat/hat1.png",
-        "../static/hat/hat2.png"
+        "../static/hat/hat.png"
     ]
     username = msg.get("FromUserName", "")
     if username == "":
+        log.info("[fail] get user info fail!")
         msg.user.send(u"机器人小源提示: 无法获取您的用户信息!")
     head_img = itchat.get_head_img(username)
     if head_img is None:
+        log.info("[fail] get head face fail!")
         msg.user.send(u"机器人小源提示: 获取您的头像图片失败!")
     head_img_path = "../image/" + str(int(time.time())) + ".jpg"
     with open(head_img_path, "wb") as f:
@@ -139,8 +140,10 @@ def christmas_hat(msg, isGroupChat=False):
     hat_img_path = random.choice(hat_img_path_list)
     head_with_hat_img_path = hat.add_hat(head_img_path, hat_img_path)
     if head_with_hat_img_path is None:
+        log.info("[fail] no people face in head image!")
         msg.user.send(u"机器人小源提示: 您的头像中未能识别出人脸，可能是小源还不支持识别动漫人脸哦~")
     else:
+        log.info("[success] merge hat and head image to " + head_with_hat_img_path)
         msg.user.send_image(head_with_hat_img_path)
 
 #所有用户私聊和群消息均可触发

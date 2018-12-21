@@ -72,7 +72,7 @@ def add_hat_to_face(head_img, hat_img, predictor, dets):
 
         # 求解帽子相对人脸的垂直偏移
         # 系数k2表示帽子到双眼所在水平线的距离为双眼所在水平线到门中的距离的k倍
-        k2 = 1.6
+        k2 = 1.3
 
         #门中到双眼线的距离, 这里简化为求门中到双眼中点的距离
         mid_eye = ((mid1[0] + mid2[0]) / 2, (mid1[1] + mid2[1]) / 2)
@@ -85,8 +85,6 @@ def add_hat_to_face(head_img, hat_img, predictor, dets):
         img_top = int(img_bottom - resized_hat.shape[0])
         img_left = int(k2 * distance * math.cos(angle_offset) + mid_eye[0] - 0.5 * resized_hat.shape[1])
         img_right = int(img_left + resized_hat.shape[1])
-        print img_left, img_right
-        print img_top, img_bottom
         #裁剪图片
         if img_left < 0:
             delta_left = 0 - img_left
@@ -118,8 +116,6 @@ def add_hat_to_face(head_img, hat_img, predictor, dets):
 
         ## 相乘之前保证两者大小一致（可能会由于四舍五入原因不一致）
         alpha = cv2.resize(alpha, (bg_roi.shape[1],bg_roi.shape[0]))
-        print alpha.shape
-        print bg_roi.shape
         bg = cv2.multiply(alpha, bg_roi)
         bg = bg.astype('uint8')
         ## cv2.imwrite("bg.jpg",bg)
