@@ -1,9 +1,11 @@
 # -*- coding:utf8 -*-
 
+import os
 import re
 import itchat
 import time
 import random
+import subprocess
 
 import hat
 import webcrawl
@@ -94,6 +96,7 @@ def send_emoji_chat(msg, isGroupChat=False):
         image_path = no_image_result_path
     else:
         image_path = download.download_image(image_url)
+        log.info(("save image to " + image_path).decode("utf8"))
     msg.user.send_image(image_path)
 
 #带query模式，搜索query并返回结果中的一张图片
@@ -105,13 +108,14 @@ def send_emoji_chat_with_query(msg, isGroupChat=False):
         image_url = webcrawl.get_image_url_with_query(query)
     _chat_log(msg, isGroupChat)
     if image_url is None:
-        log.debug("未找到匹配图片".decode("utf8"))
+        log.info("未找到匹配图片".decode("utf8"))
         image_path = no_image_result_path
     elif image_url == "trigger_blackword":
         log.info(("触发黑名单词：" + query).decode("utf8"))
         image_path = warning_image_path
     else:
         image_path = download.download_image(image_url)
+        log.info(("save image to " + image_path).decode("utf8"))
     msg.user.send_image(image_path)
 
 #动态添加黑名单词
@@ -146,6 +150,22 @@ def christmas_hat(msg, isGroupChat=False):
         log.info("[success] merge hat and head image to " + head_with_hat_img_path)
         msg.user.send_image(head_with_hat_img_path)
 
+def tail_log(msg, isGroupChat=False):
+    _chat_log(msg, isGroupChat)
+    query = int(msg.get("Text", u"").encode("utf-8").replace("日志：", "").strip())
+    subshell = subprocess.Popen(args="tail -n {} ../log/chatbot.log".format(query), shell=True, env=None, stdout=subprocess.PIPE)
+    text = subshell.stdout.read()
+    subshell.stdout.close()
+    msg.user.send(text.decode("utf8"))
+
+def get_image(msg, isGroupChat=False):
+    _chat_log(msg, isGroupChat)
+    query = msg.get("Text", u"").encode("utf-8").replace("图片：", "").strip()
+    if not os.path.exists(query):
+        msg.user.send(u"没有找到该图片")
+    else:
+        msg.user.send_image(query)
+
 #所有用户私聊和群消息均可触发
 #其它用户群消息必须@本用户触发
 strategy_map_global = {
@@ -166,5 +186,7 @@ strategy_map_chatone = {
 strategy_map_me = {
     "表情包$": send_emoji_chat,
     "表情包：.*$": send_emoji_chat_with_query,
-    "黑名单词：.*$": add_blackword
+    "黑名单词：.*$": add_blackword,
+    "日志：.*$": tail_log,
+    "图片：.*$": get_image
 }
