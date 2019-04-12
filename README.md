@@ -11,13 +11,17 @@
 - 关键词触发函数
 - 装饰器设置监听
 - 聊天信息上下文
+### 2019-04-12 V1.1
+- 登录方式配置化
+- 日志配置化
+- 关键词支持正则
 
 ## 使用方法（若有变动会随版本更新）
 **简单开始**
 ```python
 import chatbot
 
-botman = chatbot.chatbot()
+botman = chatbot.Chatbot()
 
 @botman.listen('你好')
 def hello():
@@ -62,3 +66,26 @@ def back():
     return msg.Text.encode('utf-8')
 ```
 context是当前聊天内容上下问，其中msg为本次信息对象，使用线程局部状态thread.local保证多次请求之间上下文隔离。
+
+**配置**
+```python
+from chatbot import Chatbot
+conf = {
+    "login_conf": {
+        "hotReload": True,
+        "statusStorageDir": 'chatbot.pkl',
+        "enableCmdQR": False,
+        "picDir": None,
+        "qrCallback": None,
+        "loginCallback": None,
+        "exitCallback": None
+    },
+    "logger_conf": {
+        "path": "./default.log",
+        "name": "chatbot",
+        "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        "level": "DEBUG"
+    }
+}
+botman = Chatbot(conf=conf)
+```

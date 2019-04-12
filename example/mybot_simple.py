@@ -7,7 +7,7 @@ sys.path.append('../src')
 
 import chatbot
 
-botman = chatbot.chatbot()
+botman = chatbot.Chatbot()
 
 @botman.listen('你好')
 def hello():
