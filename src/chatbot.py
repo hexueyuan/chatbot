@@ -1,5 +1,4 @@
 # -*- coding:utf-8 -*-
-# python2
 
 import itchat
 import logging
@@ -125,10 +124,12 @@ class Chatbot():
                 rule['nickName'] = nickName
             rules[key_word].append(rule)
 
-    def listen(self, key_word, isOne=True, isSelf=False, isGroup=False, isAt=False, nickName=None):
+    def listen(self, key_word, isOne=False, isSelf=False, isGroup=False, isAt=False, nickName=None):
         """
         add listen rule by decorator
         """
+        if not isOne and not isSelf and not isGroup:
+            isOne = True
         def decorator(f):
             self.add_listen_rule(key_word, f, isOne, isSelf, isGroup, isAt, nickName)
             return f
@@ -181,7 +182,7 @@ class Chatbot():
             self.logger.debug('检索私聊规则词表')
             aim_rules =  self.listen_rule["onechat"]
 
-        for key, value in aim_rules:
+        for key, value in aim_rules.items():
             key_com = re.compile(key)
             if key_com.match(text):
                 rules.extend(value)
