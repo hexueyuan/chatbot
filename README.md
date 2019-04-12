@@ -1,101 +1,64 @@
 # chatbot
-微信机器人
-基于itchat的微信机器人框架，把自己的微信号变成一个智能机器人。
+基于关键词触发的微信机器人框架
 
----
+## 功能
+- 识别关键词触发处理函数
+- 类falsk的操作，使用装饰器设置关键词
+- 聊天信息设置为上下文数据，直接在处理函数中访问
 
-## 项目介绍  
-本项目基于[itchat](https://github.com/littlecodersh/itchat)库进行开发，启动之后机器人监听私聊和群聊消息，当匹配文字指令之后，执行机器人服务。  
+## 版本更新
+### 2019-04-12 V1.0
+- 关键词触发函数
+- 装饰器设置监听
+- 聊天信息上下文
 
----
-目前实现了两个主要服务：  
- 1. 微信表情包  
-使用爬虫访问[bee-ji](http://www.bee-ji.com)网站获取表情包，仅娱乐非商用。  
-项目后台启动后监听登录账号收发的消息，并捕捉如下指令。  
-> 表情包  
-> 表情包：关键词  
-> 表情包:关键词  
-
-群聊消息需要@账号加指令。  
-使用见下图:
-![群聊中使用](/static/qunliao.jpg)  
-
-![私聊中使用](/static/siliao.jpg)
-
-为了防止用户恶意某些不当到关键词，添加了黑名单词表，当触发黑名单词时，返回自定义图片。
-static目录下blackword为黑名单词表，每一行为一个黑名单词，当用户关键词匹配黑名单词时，输出static/warning.gif图片，当用户关键词没有找到相关图片时输出static/noimage.jpg，以上均可根据喜好修改。
-
-2. 我要圣诞帽
-基于dlib的人脸识别和opencv的图像处理，微信机器人监听好友私聊信息，识别到`我要圣诞帽`指令时，获取好友头像并添加圣诞帽，然后返回合成后到图片给好友。
-![我要圣诞帽](/static/chrismashat.jpg)
-
-另外还有两个辅助的服务  
-
-1. 获取日志信息  
-chatbot默认日志在项目目录下的log/chatbot.log下，为了方便直接在微信上查看日志内容，开放个人指令`日志：<num>`查看当前日志末尾的\<num\>条日志，该指令注册在个人消息体中，因此别人的指令无法触发。  
-
-2. 发送图片  
-同样是为了方便测试，开放`图片：<path>`个人指令，在指令窗口输出\<path\>指定的图片，\<path\>为相对chatbot.py的路径，一般在日志中可以直接获取。该指令同样注册在个人消息体中，他人无法触发。  
----
-
-## 下载
-> git clone git@github.com:hexueyuan/chatbot.git
-  
-## 使用
-> cd chatbot  
-> . init.sh  
-
-输出当前环境，当init.sh检查结果正常时 
-
-> cd src  
-> python chatbot  
-
-然后会在命令行出现二维码，使用微信扫描登录之后，chatbot开始运行
-
-## 开发 
-微信机器人可以很容易扩展其他到服务，比如你可以通过微信机器人传送远端文件，这样你可以通过手机和家里登录了微信机器人的电脑进行文件传送，也可以通过微信机器人开发智能聊天机器人等。  
-
-微信机器人将添加新服务的过程进行了简单封装，在src/strategy.py程序中，有如下几个dict:
+## 使用方法（若有变动会随版本更新）
+**简单开始**
 ```python
-#所有用户私聊和群消息均可触发
-#其它用户群消息必须@本用户触发
-strategy_map_global = {
-    "表情包$": send_emoji_chat,
-    "表情包：.*$": send_emoji_chat_with_query
-}
+import chatbot
 
-#所有用户群消息
-#其它用户必须@本用户触发
-strategy_map_chatroom = {}
+botman = chatbot.chatbot()
 
-#私聊
-strategy_map_chatone = {
-    "我要圣诞帽$": christmas_hat
-}
+@botman.listen('你好')
+def hello():
+    return '你好'
 
-#本用户消息触发
-strategy_map_me = {
-    "表情包$": send_emoji_chat,
-    "表情包：.*$": send_emoji_chat_with_query,
-    "黑名单词：.*$": add_blackword
-}
+if __name__ == "__main__":
+    botman.run()
 ```
-这是服务注册的配置，若你需要增加一个新的服务，请按照已有的服务函数(send_emoji_chat、christmas_hat)写自己的服务函数，并添加到服务注册配置中，服务注册有四个注册体，分别监控`群聊中其他用户信息`、`私聊中他人的信息`、`群聊和私聊中本用户的信息`、`群聊和私聊中其他用户的信息`,参见代码中的注释部分，注册关键词为正则匹配模式。
+登录方式与itchat登录方式一致，扫描二维码即可。
+![](./img/demo.png)
 
-以下提供一个开发样例，实现用户私聊发送`我的信息`时返回在itchat中查询到的好友信息。  
-首先编写服务函数，这部分添加到strategy.py文件中:  
+**说明**
+使用import引入chatbot，实例化chatbot对象变量botman。
+
+listen方法设置关键词监听，原型如下:
 ```python
-import json
+listen(self, key_word, isOne=True, isSelf=False, isGroup=False, isAt=False, nickName=None)
+```
+**key_word**为关键词，匹配某条信息的全部内容，不匹配字串
+**isOne**设置私聊模式，默认为True，只监听私聊信息中别人的聊天内容
+**isSelf**设置本人模式，默认False，监听私聊和群聊中自己的聊天内容
+**isGroup**设置群聊模式，默认False，监听群聊中别人的聊天内容
+**isAt**设置@属性，默认False，在群聊模式中是否要求@触发
+**nickName**私聊模式下，指定nickName的用户触发，输入对方的微信昵称，群聊模式下指定nickName的群聊触发
 
-def send_user_info(msg, isGroup=False):
-    info = itchat.search_friends(msg["FromUserName"]
-    msg.user.send(json.dumps(info, indent=2, ensure_ascii=False))
-```
-函数很简单，当触发该服务时，获取msg中到user信息，并使用json库dump为字符串并返回给好友。接下来在私聊服务注册体中增加配置：  
+处理函数直接返回字符串即可，chatbot将内容发送回当前上下文的聊天窗口；也支持返回元组以支持更多格式:
 ```python
-strategy_map_chatone = {
-    "我要圣诞帽$": christmas_hat,
-    "我的信息$": send_user_info
-}
+@botman.listen('文本')
+def text():
+    return 'text', 'Hello world!'
+
+@botman.listen('图片')
+    return 'image', './hello.jpg'
 ```
-注册完成之后重新登录chatbot即可。
+image中返回值元组第二个元素为图片本地路径
+
+**处理函数中获取聊天内容**
+```python
+@botman.listen('回复')
+def back():
+    msg = chatbot.context.msg
+    return msg.Text.encode('utf-8')
+```
+context是当前聊天内容上下问，其中msg为本次信息对象，使用线程局部状态thread.local保证多次请求之间上下文隔离。
