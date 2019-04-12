@@ -192,8 +192,12 @@ class Chatbot():
         """
         running a handler rule
         """
+        self.logger.info("触发处理函数: {}".format(rule['handlerName']))
         global context
         msg = context.msg
+
+        if not context.isGroupChat:
+            rule['isAt'] = False
 
         if rule['isAt'] == context.isAt and rule.get('nickName', context.fromUserNickName) == context.fromUserNickName:
             handler = rule['handler']
@@ -214,6 +218,14 @@ class Chatbot():
                     self.logger.debug("未支持返回类型: {}".format(t))
             else:
                 self.logger.warning("处理函数返回格式错误，错误类型: {}".format(str(type(content))))
+        else:
+            self.logger.info("处理函数配置项匹配失败")
+            if rule['isAt'] != context.isAt:
+                self.logger.debug("群聊@属性不匹配")
+                self.logger.debug("{} != {}".format(str(rule['isAt']), str(context.isAt)))
+            if rule.get('nickName', context.fromUserNickName) != context.fromUserNickName:
+                self.logger.debug("对象昵称不匹配")
+                self.logger.debug("{} != {}".format(rule.get('nickName', context.fromUserNickName), context.fromUserNickName))
 
     def _handler_diliver(self, msg, isGroupChat):
         """
