@@ -2,3 +2,6 @@
 tmp
 *.pyc
 *.pkl
+example/img
+example/chatbot.pkl
+example/chat_robot.log
