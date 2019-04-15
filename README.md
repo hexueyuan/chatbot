@@ -1,5 +1,7 @@
 # chatbot
-基于关键词触发的微信机器人框架, 支持Python2.7.x和python3（测试环境python2.7.15和python3.7.1）
+![](https://img.shields.io/badge/chatbot-1.1-green.svg)
+![](https://img.shields.io/badge/python-2.7.x-brightgreen.svg)  
+基于关键词触发的微信机器人框架, 支持Python2.7.x和python3（测试环境python2.7.15和python3.7.1） 
 
 ## 功能
 - 识别关键词触发处理函数
