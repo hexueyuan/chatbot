@@ -95,4 +95,5 @@ botman = Chatbot(conf=conf)
 ```
 
 ## 使用chatbot开发的服务
-- [表情包机器人](example/emoji_robot.md)
+- [表情包机器人](example/emoji_robot/emoji_robot.md)
+- [自动戴圣诞帽服务](example/christmas_hat_robot/christmas_hat_robot.md)
