@@ -18,7 +18,11 @@ try:
 except ImportError:
     import http.cookiejar as cookielib
 
+<<<<<<< HEAD:example/emoji_robot/emoji_robot.py
 sys.path.append('../../src')
+=======
+sys.path.append('../src')
+>>>>>>> 56d84344ab1359d059bccefd5417b1c5647b2b30:example/emoji_robot.py
 
 from chatbot import Chatbot, context
 
@@ -36,7 +40,7 @@ config = {
         "path": "./chat_robot.log",
         "name": "chat_robot",
         "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        "level": "INFO"
+        "level": "DEBUG"
     }
 }
 
