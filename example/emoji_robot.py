@@ -3,12 +3,20 @@
 
 import sys
 import urllib
-import urllib2
-import cookielib
 import json
 import random
 import time
 import requests
+
+try:
+    import urllib2 as requestlib
+except ImportError:
+    import urllib.request as requestlib
+
+try:
+    import cookielib as cookielib
+except ImportError:
+    import http.cookiejar as cookielib
 
 sys.path.append('../src')
 
@@ -28,7 +36,7 @@ config = {
         "path": "./chat_robot.log",
         "name": "chat_robot",
         "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        "level": "INFO"
+        "level": "DEBUG"
     }
 }
 
@@ -36,9 +44,9 @@ robot = Chatbot(conf=config)
 
 def emoji_image():
     cj = cookielib.LWPCookieJar()
-    cookie_support = urllib2.HTTPCookieProcessor(cj)
-    opener = urllib2.build_opener(cookie_support, urllib2.HTTPHandler)
-    urllib2.install_opener(opener)
+    cookie_support = requestlib.HTTPCookieProcessor(cj)
+    opener = requestlib.build_opener(cookie_support, requestlib.HTTPHandler)
+    requestlib.install_opener(opener)
 
     user_agent = 'Mozilla/5.0 (iPad; CPU OS 11_0 like Mac OS X) AppleWebKit/604.1.34 (KHTML, like Gecko) Version/11.0 Mobile/15A5341f Safari/604.1'
     cookie = "Hm_lvt_65e796f34b9ee7170192209a91520a9a=1555081237; Hm_lpvt_65e796f34b9ee7170192209a91520a9a=1555081315"
@@ -46,7 +54,7 @@ def emoji_image():
     image_base_url = "http://image.bee-ji.com/"
     image_path = './img/'
 
-    req = urllib2.Request(url)
+    req = requestlib.Request(url)
     req.add_header('User-Agent', user_agent)
     req.add_header('Cookie', cookie)
     data = opener.open(req).read()

@@ -1,10 +1,15 @@
 # -*- coding:utf-8 -*-
 
+import sys
 import itchat
 import logging
 import threading
 import collections
 import re
+
+if sys.version_info.major < 3:
+    reload(sys)
+    sys.setdefaultencoding("utf-8")
 
 context = threading.local()
 context.msg = None
@@ -43,8 +48,6 @@ class Chatbot():
         }
 
         # login to wechat client
-        # TODO: make it configurable, and provide more configure options
-        # set default hotReload as True to decrease login time
         if conf is not None:
             login_conf = conf.get('login_conf', {})
         else:
@@ -69,7 +72,7 @@ class Chatbot():
         # itchat provide `search_friends` methods to search user information by user name
         # if no user name support it return your own infomation, it is useful so save it.
         me = itchat.search_friends()
-        self.nickName = me['NickName'].encode('utf-8')
+        self.nickName = me['NickName']
         self.userName = me['UserName']
 
         # initialize logger module
@@ -102,7 +105,7 @@ class Chatbot():
     def add_listen_rule(self, key_word, handler, isOne=True, isSelf=False, isGroup=False, isAt=False, nickName=None):
         """
         add_listen_rule
-            add a rule to chatbot.
+            add a listen rule to chatbot.
         """
         listen_rule = self.listen_rule
         
@@ -140,20 +143,20 @@ class Chatbot():
         get msg sender nickname
         """
         if isGroupChat:
-            return msg['ActualNickName'].encode('utf-8')
+            return msg['ActualNickName'].encode()
 
         friend = itchat.search_friends(userName=msg["FromUserName"])
         if friend is None:
             return "未知"
         else:
-            return friend['NickName'].encode("utf-8")
+            return friend['NickName']
 
     def get_group_selfname(self, msg):
         """
         get your nickname in a centain group
         """
-        if msg.get('User').has_key('Self') and msg['User']['Self']['DisplayName'].encode('utf-8') != '':
-            return msg['User']['Self']['DisplayName'].encode('utf-8')
+        if msg.get('User').has_key('Self') and msg['User']['Self']['DisplayName'].encode() != '':
+            return msg['User']['Self']['DisplayName'].encode()
         else:
             return self.nickName
 
@@ -164,7 +167,7 @@ class Chatbot():
         global context
         msg = context.msg
 
-        text = msg["Text"].encode("utf-8")
+        text = msg["Text"].encode()
         if context.isAt:
             prefix = '@' + self.get_group_selfname(msg) + ' '
             text = text.replace(prefix, '')
@@ -184,7 +187,9 @@ class Chatbot():
 
         for key, value in aim_rules.items():
             key_com = re.compile(key)
-            if key_com.match(text):
+            if sys.version_info.major < 3 and key_com.match(text):
+                rules.extend(value)
+            elif sys.version_info.major == 3 and key_com.match(text.decode()):
                 rules.extend(value)
         return rules
 
@@ -205,12 +210,12 @@ class Chatbot():
 
             if type(content) == type(str()):
                 self.logger.debug("返回信息: {}".format(content))
-                msg.User.send(content.decode('utf-8'))
+                msg.User.send(content)
             elif type(content) == type(tuple()):
                 t, arg = content
                 if t == "text":
                     self.logger.debug("返回信息: {}".format(arg))
-                    msg.User.send(arg.decode('utf-8'))
+                    msg.User.send(arg)
                 elif t == "image":
                     self.logger.debug("返回图片: {}".format(arg))
                     msg.User.send_image(arg)
@@ -251,7 +256,7 @@ class Chatbot():
         @itchat.msg_register(itchat.content.TEXT)
         def trigger_chatone(msg):
             fromUserName = self.get_from_username(msg)
-            text = msg['Text'].encode('utf-8')
+            text = msg['Text'].encode()
             self.logger.info('(普通消息){}: {}'.format(fromUserName, text))
             
             t = threading.Thread(target=self._handler_diliver, args=(msg, False))
@@ -261,7 +266,7 @@ class Chatbot():
         @itchat.msg_register(itchat.content.TEXT, isGroupChat=True)
         def trigger_chatgroup(msg):
             fromUserName = self.get_from_username(msg, isGroupChat=True)
-            text = msg['Text'].encode('utf-8')
+            text = msg['Text'].encode()
             self.logger.info('(群消息){}: {}'.format(fromUserName, text))
 
             t = threading.Thread(target=self._handler_diliver, args=(msg, True))
